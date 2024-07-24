@@ -12,17 +12,21 @@ class SimpleVideoEditor:
         self.video1_path = tk.StringVar()
         self.video2_path = tk.StringVar()
         self.output_path = tk.StringVar()
+
         self.cut_before_index = tk.StringVar()
         self.cut_before_index.set("00:00:00")
+
         self.cut_after_index = tk.StringVar()
         self.cut_after_index.set("00:00:00")
 
         # path to change and save video volume change
-        self.video_volume_path = tk.StringVar()
+        self.video_change_volume_path = tk.StringVar()
+
         self.volume_index = tk.DoubleVar()
         self.volume_index.set(1.0)
-        self.volume_output_path = tk.StringVar()
-        self.audio_output_path = tk.StringVar()
+
+        self.video_change_volume_output = tk.StringVar()
+        self.audio_output = tk.StringVar()
 
         # create UI
         self.create_widgets()
@@ -64,12 +68,12 @@ class SimpleVideoEditor:
 
         # tab up volume
         tk.Label(tab_up_volume, text="Video:").grid(row=0, column=0, padx=10, pady=10)
-        tk.Entry(tab_up_volume, textvariable=self.video_volume_path, width=50).grid(row=0, column=1, padx=10, pady=10)
-        tk.Button(tab_up_volume, text="Browse", command=self.browse_video_volume).grid(row=0, column=2, padx=10, pady=10)
+        tk.Entry(tab_up_volume, textvariable=self.video_change_volume_path, width=50).grid(row=0, column=1, padx=10, pady=10)
+        tk.Button(tab_up_volume, text="Browse", command=self.browse_video_change_volume).grid(row=0, column=2, padx=10, pady=10)
 
         tk.Label(tab_up_volume, text="Output Video:").grid(row=1, column=0, padx=10, pady=10)
-        tk.Entry(tab_up_volume, textvariable=self.volume_output_path, width=50).grid(row=1, column=1, padx=10, pady=10)
-        tk.Button(tab_up_volume, text="Browse", command=self.browse_volume_output).grid(row=1, column=2, padx=10, pady=10)
+        tk.Entry(tab_up_volume, textvariable=self.video_change_volume_output, width=50).grid(row=1, column=1, padx=10, pady=10)
+        tk.Button(tab_up_volume, text="Browse", command=self.browse_video_change_volume_output).grid(row=1, column=2, padx=10, pady=10)
 
         tk.Label(tab_up_volume, text="Index Volume:").grid(row=2, column=0, padx=10, pady=10)
         tk.Entry(tab_up_volume, textvariable=self.volume_index, width=50).grid(row=2, column=1, padx=10, pady=10)
@@ -77,7 +81,7 @@ class SimpleVideoEditor:
         tk.Button(tab_up_volume, text="Change Volume", command=self.change_volume).grid(row=3, column=0, columnspan=3, pady=20)
 
         tk.Label(tab_up_volume, text="Output Audio:").grid(row=4, column=0, padx=10, pady=10)
-        tk.Entry(tab_up_volume, textvariable=self.audio_output_path, width=50).grid(row=4, column=1, padx=10, pady=10)
+        tk.Entry(tab_up_volume, textvariable=self.audio_output, width=50).grid(row=4, column=1, padx=10, pady=10)
         tk.Button(tab_up_volume, text="Browse", command=self.browse_audio_output).grid(row=4, column=2, padx=10, pady=10)
 
         tk.Button(tab_up_volume, text="Export Audio", command=self.export_audio).grid(row=5, column=0, columnspan=3, pady=20)
@@ -119,49 +123,49 @@ class SimpleVideoEditor:
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
-    def browse_video_volume(self):
+    def browse_video_change_volume(self):
         file_path = filedialog.askopenfilename(title="Select Video Change Volume", filetypes=[("MP4 files", "*.mp4")])
         if file_path:
-            self.video_volume_path.set(file_path)
+            self.video_change_volume_path.set(file_path)
 
-    def browse_volume_output(self):
+    def browse_video_change_volume_output(self):
         file_path = filedialog.asksaveasfilename(title="Save Change Volume Video", defaultextension=".mp4", filetypes=[("MP4 files", "*.mp4")])
         if file_path:
-            self.volume_output_path.set(file_path)
+            self.video_change_volume_output.set(file_path)
 
     def change_volume(self):
-        video_volume = self.video_volume_path.get()
+        video_change_volume = self.video_change_volume_path.get()
         volume_index = self.volume_index.get()
-        volume_output = self.volume_output_path.get()
+        video_change_volume_output = self.video_change_volume_output.get()
 
-        if not video_volume:
-            messagebox.showerror("Error", "Please select video to change volume.")
+        if not video_change_volume and not volume_index and not video_change_volume_output:
+            messagebox.showerror("Error", "Please select Video, Output Video, Index Volume to change volume.")
             return
 
         try:
-            command = f"ffmpeg -i \"{video_volume}\" -filter:a \"volume={volume_index}\" -c:v copy -c:a aac \"{volume_output}\""
+            command = f"ffmpeg -i \"{video_change_volume}\" -filter:a \"volume={volume_index}\" -c:v copy -c:a aac \"{video_change_volume_output}\""
             print(command)
             subprocess.run(command, shell=True, check=True)
 
-            messagebox.showinfo("Success", "Videos change successfully!")
+            messagebox.showinfo("Success", "Videos change volume successfully!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
     def browse_audio_output(self):
         file_path = filedialog.asksaveasfilename(title="Save Audio", defaultextension=".mp3", filetypes=[("MP3 files", "*.mp3")])
         if file_path:
-            self.audio_output_path.set(file_path)
+            self.audio_output.set(file_path)
 
     def export_audio(self):
-        video_volume = self.video_volume_path.get()
-        audio_output = self.audio_output_path.get()
+        video_change_volume = self.video_change_volume_path.get()
+        audio_output = self.audio_output.get()
 
-        if not audio_output:
-            messagebox.showerror("Error", "Please select audio to export.")
+        if not video_change_volume and not audio_output:
+            messagebox.showerror("Error", "Please select Video, Output Audio to export.")
             return
 
         try:
-            command = f"ffmpeg -i \"{video_volume}\" -q:a 0 -map a \"{audio_output}\""
+            command = f"ffmpeg -i \"{video_change_volume}\" -q:a 0 -map a \"{audio_output}\""
             print(command)
             subprocess.run(command, shell=True, check=True)
 
@@ -175,7 +179,7 @@ class SimpleVideoEditor:
         before_index = self.cut_before_index.get()
 
         if not video1 or not output or not before_index:
-            messagebox.showerror("Error", "Please select video1, output, before index to export.")
+            messagebox.showerror("Error", "Please select Video 1, Output Video, Before Index to export.")
             return
 
         try:
@@ -193,7 +197,7 @@ class SimpleVideoEditor:
         after_index = self.cut_after_index.get()
 
         if not video1 or not output or not after_index:
-            messagebox.showerror("Error", "Please select video1, output, before index to export.")
+            messagebox.showerror("Error", "Please select Video 1, Output Video, After Index to export.")
             return
 
         try:
