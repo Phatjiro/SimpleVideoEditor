@@ -18,6 +18,7 @@ class SimpleVideoEditor:
         self.volume_index = tk.DoubleVar()
         self.volume_index.set(1.0)
         self.volume_output_path = tk.StringVar()
+        self.audio_output_path = tk.StringVar()
 
         # create UI
         self.create_widgets()
@@ -59,6 +60,12 @@ class SimpleVideoEditor:
         tk.Entry(tab_up_volume, textvariable=self.volume_index, width=50).grid(row=2, column=1, padx=10, pady=10)
 
         tk.Button(tab_up_volume, text="Change Volume", command=self.change_volume).grid(row=3, column=0, columnspan=3, pady=20)
+
+        tk.Label(tab_up_volume, text="Output Audio:").grid(row=4, column=0, padx=10, pady=10)
+        tk.Entry(tab_up_volume, textvariable=self.audio_output_path, width=50).grid(row=4, column=1, padx=10, pady=10)
+        tk.Button(tab_up_volume, text="Browse", command=self.browse_audio_output).grid(row=4, column=2, padx=10, pady=10)
+
+        tk.Button(tab_up_volume, text="Export Audio", command=self.export_audio).grid(row=5, column=0, columnspan=3, pady=20)
 
     def browse_video1(self):
         file_path = filedialog.askopenfilename(title="Select Video 1", filetypes=[("MP4 files", "*.mp4")])
@@ -122,6 +129,28 @@ class SimpleVideoEditor:
             subprocess.run(command, shell=True, check=True)
 
             messagebox.showinfo("Success", "Videos change successfully!")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")
+
+    def browse_audio_output(self):
+        file_path = filedialog.asksaveasfilename(title="Save Audio", defaultextension=".mp3", filetypes=[("MP3 files", "*.mp3")])
+        if file_path:
+            self.audio_output_path.set(file_path)
+
+    def export_audio(self):
+        video_volume = self.video_volume_path.get()
+        audio_output = self.audio_output_path.get()
+
+        if not audio_output:
+            messagebox.showerror("Error", "Please select audio to export.")
+            return
+
+        try:
+            command = f"ffmpeg -i \"{video_volume}\" -q:a 0 -map a \"{audio_output}\""
+            print(command)
+            subprocess.run(command, shell=True, check=True)
+
+            messagebox.showinfo("Success", "Audio export successfully!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
