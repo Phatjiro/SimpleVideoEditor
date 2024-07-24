@@ -3,7 +3,7 @@ from tkinter import ttk, filedialog, messagebox
 import subprocess
 
 
-class VideoMergerApp:
+class SimpleVideoEditor:
     def __init__(self, root):
         self.root = root
         self.root.title("Simple Video Editor")
@@ -128,6 +128,6 @@ class VideoMergerApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = VideoMergerApp(root)
+    app = SimpleVideoEditor(root)
     root.mainloop()
 
