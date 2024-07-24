@@ -12,6 +12,10 @@ class SimpleVideoEditor:
         self.video1_path = tk.StringVar()
         self.video2_path = tk.StringVar()
         self.output_path = tk.StringVar()
+        self.cut_before_index = tk.StringVar()
+        self.cut_before_index.set("00:00:00")
+        self.cut_after_index = tk.StringVar()
+        self.cut_after_index.set("00:00:00")
 
         # path to change and save video volume change
         self.video_volume_path = tk.StringVar()
@@ -46,6 +50,17 @@ class SimpleVideoEditor:
         tk.Button(tab_merge, text="Browse", command=self.browse_output).grid(row=2, column=2, padx=10, pady=10)
 
         tk.Button(tab_merge, text="Merge Videos", command=self.merge_videos).grid(row=3, column=0, columnspan=3, pady=20)
+
+        tk.Label(tab_merge, text="Cut Before:").grid(row=4, column=0, padx=10, pady=10)
+        tk.Entry(tab_merge, textvariable=self.cut_before_index, width=50).grid(row=4, column=1, padx=10, pady=10)
+        tk.Label(tab_merge, text="Format: 00:00:00").grid(row=4, column=2, padx=10, pady=10)
+
+        tk.Label(tab_merge, text="Cut After:").grid(row=5, column=0, padx=10, pady=10)
+        tk.Entry(tab_merge, textvariable=self.cut_after_index, width=50).grid(row=5, column=1, padx=10, pady=10)
+        tk.Label(tab_merge, text="Format: 00:00:00").grid(row=5, column=2, padx=10, pady=10)
+
+        tk.Button(tab_merge, text="Cut Before", command=self.cut_before).grid(row=6, column=0, pady=20)
+        tk.Button(tab_merge, text="Cut After", command=self.cut_after).grid(row=6, column=1, pady=20)
 
         # tab up volume
         tk.Label(tab_up_volume, text="Video:").grid(row=0, column=0, padx=10, pady=10)
@@ -151,6 +166,42 @@ class SimpleVideoEditor:
             subprocess.run(command, shell=True, check=True)
 
             messagebox.showinfo("Success", "Audio export successfully!")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")
+
+    def cut_before(self):
+        video1 = self.video1_path.get()
+        output = self.output_path.get()
+        before_index = self.cut_before_index.get()
+
+        if not video1 or not output or not before_index:
+            messagebox.showerror("Error", "Please select video1, output, before index to export.")
+            return
+
+        try:
+            command = f"ffmpeg -i \"{video1}\" -t {before_index} -c copy \"{output}\""
+            print(command)
+            subprocess.run(command, shell=True, check=True)
+
+            messagebox.showinfo("Success", "Cutting video successfully!")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")
+
+    def cut_after(self):
+        video1 = self.video1_path.get()
+        output = self.output_path.get()
+        after_index = self.cut_after_index.get()
+
+        if not video1 or not output or not after_index:
+            messagebox.showerror("Error", "Please select video1, output, before index to export.")
+            return
+
+        try:
+            command = f"ffmpeg -i \"{video1}\" -ss {after_index} -c copy \"{output}\""
+            print(command)
+            subprocess.run(command, shell=True, check=True)
+
+            messagebox.showinfo("Success", "Cutting video successfully!")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {str(e)}")
 
