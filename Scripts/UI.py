@@ -6,7 +6,7 @@ import subprocess
 class SimpleVideoEditor:
     def __init__(self, root):
         self.root = root
-        self.root.title("Simple Video Editor")
+        self.root.title("Simple Video Editor - Youtube: Phat Lap Trinh Game")
 
         # path to get and save video
         self.video1_path = tk.StringVar()
