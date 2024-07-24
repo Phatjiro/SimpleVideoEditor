@@ -57,11 +57,11 @@ class SimpleVideoEditor:
 
         tk.Label(tab_merge, text="Cut Before:").grid(row=4, column=0, padx=10, pady=10)
         tk.Entry(tab_merge, textvariable=self.cut_before_index, width=50).grid(row=4, column=1, padx=10, pady=10)
-        tk.Label(tab_merge, text="Format: 00:00:00").grid(row=4, column=2, padx=10, pady=10)
+        tk.Label(tab_merge, text="hh:mm:ss").grid(row=4, column=2, padx=10, pady=10)
 
         tk.Label(tab_merge, text="Cut After:").grid(row=5, column=0, padx=10, pady=10)
         tk.Entry(tab_merge, textvariable=self.cut_after_index, width=50).grid(row=5, column=1, padx=10, pady=10)
-        tk.Label(tab_merge, text="Format: 00:00:00").grid(row=5, column=2, padx=10, pady=10)
+        tk.Label(tab_merge, text="hh:mm:ss").grid(row=5, column=2, padx=10, pady=10)
 
         tk.Button(tab_merge, text="Cut Before", command=self.cut_before).grid(row=6, column=0, pady=20)
         tk.Button(tab_merge, text="Cut After", command=self.cut_after).grid(row=6, column=1, pady=20)
